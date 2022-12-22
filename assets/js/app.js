@@ -7,15 +7,17 @@ const resultEl = document.querySelector("#result");
 const randomNumEl = document.querySelector("#randomNum");
 const gameInfoEl = document.querySelector("#gameInfo");
 const shotEl = document.querySelector("#shot");
-
-let maxNumber = 100;
-let minNumber = 1;
+let minNumber = 0;
+let maxNumber = 15;
 let randomNumber;
-let lifes = 10;
+const rights = 5;
+let lifes = rights;
 let status = "over";
 
 // GAME-INFO BOX
-gameInfoEl.innerHTML = `The program will randomly pick a number between ${minNumber} and ${maxNumber}. Your goal is to guess the number. You have ${lifes} lives. The program will tell you if the number is greater or fewer. Good luck!`;
+gameInfoEl.innerHTML = `The program will randomly pick a number between ${minNumber} and ${maxNumber}. 
+  Your goal is to guess the number. You have ${lifes} lives. 
+  The program will tell you if the number is greater or fewer. Good luck!`;
 
 // SHOT HEART
 const setShotIcons = (shot) => {
@@ -28,7 +30,7 @@ const setShotIcons = (shot) => {
 
 // GENERATE RANDOM NUMBER
 const generateRandomNumber = (minNumber, maxNumber) => {
-  return Math.floor(Math.random() * (maxNumber - minNumber + 1) + minNumber);
+  return Math.floor(Math.random() * (maxNumber - minNumber) + minNumber);
 };
 
 // KEYPRESS ENTER
@@ -50,23 +52,30 @@ const startGame = () => {
   inputEl.classList.remove("d-none");
   inputEl.focus();
 
-  // need help! when player guesses the incorrect number the heart icon must decrease one by one
-  shotEl.innerText = setShotIcons(lifes);
-
+  shotEl.innerHTML = `Remaining life <i class="fa-solid fa-arrow-right text-danger"></i> ${setShotIcons(
+    lifes
+  )}`;
   randomNumEl.innerText = randomNumber;
 };
 
 // RESTART GAME
 const restartGame = () => {
+  inputEl.classList.add("d-inline");
+  inputEl.classList.remove("d-none");
   btnGuessEl.classList.remove("d-none");
   btnGuessEl.classList.add("d-inline");
   inputEl.value = "";
   inputEl.focus();
   resultEl.classList.remove("d-block");
   resultEl.classList.add("d-none");
-  randomNumber = generateRandomNumber(100, 1);
+  randomNumber = generateRandomNumber(minNumber, maxNumber);
   randomNumEl.innerText = randomNumber;
-  lifes = 5;
+
+  //set lifes
+  lifes = rights;
+  shotEl.innerHTML = `Remaining life <i class="fa-solid fa-arrow-right text-danger"></i> ${setShotIcons(
+    lifes
+  )}`;
 };
 
 // GUESS NUMBER
@@ -74,14 +83,6 @@ const guessNumber = () => {
   resultEl.classList.remove("d-none");
   resultEl.classList.add("d-block");
   let guessedNumber = Number(inputEl.value);
-  lifes--;
-
-  if (status === "over" || lifes === 0) {
-    resultEl.innerText = "Game over. Please restart the game!";
-    inputEl.value = "";
-    btnGuessEl.classList.add("d-none");
-    return;
-  }
 
   if (
     !guessedNumber ||
@@ -92,18 +93,33 @@ const guessNumber = () => {
     return alert("Please enter a valid number.");
   }
 
+  if (status === "over" || lifes === 0) {
+    resultEl.innerHTML = `GAME OVER`;
+    btnGuessEl.classList.add("d-none");
+    inputEl.classList.add("d-none");
+    inputEl.classList.remove("d-inline");
+    return;
+  }
+
   if (guessedNumber === randomNumber) {
     resultEl.innerText = "🎉 Congratulations! You win! 🎉";
     btnGuessEl.classList.add("d-none");
+    inputEl.classList.add("d-none");
+    inputEl.classList.remove("d-inline");
     inputEl.value = "";
     status = "over";
   } else if (guessedNumber < randomNumber) {
-    resultEl.innerText = "Please guess a greater number ⬆️";
+    resultEl.innerHTML = `Please guess a greater number <i class="fa-solid fa-arrow-up text-danger"></i>`;
     inputEl.value = "";
     inputEl.focus();
   } else {
-    resultEl.innerText = "Please guess a smaller number ⬇️";
+    resultEl.innerHTML = `Please guess a smaller number <i class="fa-solid fa-arrow-down text-danger"></i>`;
     inputEl.value = "";
     inputEl.focus();
   }
+
+  lifes--;
+  shotEl.innerHTML = `Remaining life <i class="fa-solid fa-arrow-right text-danger"></i> ${setShotIcons(
+    lifes
+  )}`;
 };
