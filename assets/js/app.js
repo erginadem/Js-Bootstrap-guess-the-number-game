@@ -12,7 +12,6 @@ let maxNumber = 15;
 let randomNumber;
 const rights = 5;
 let lifes = rights;
-let status = "over";
 
 // GAME-INFO BOX
 gameInfoEl.innerHTML = `The program will randomly pick a number between ${minNumber} and ${maxNumber}. 
@@ -43,7 +42,6 @@ inputEl.addEventListener("keypress", function (event) {
 
 // START GAME
 const startGame = () => {
-  status = "on";
   randomNumber = generateRandomNumber(minNumber, maxNumber);
   btnRestartEl.classList.remove("d-none");
   btnRestartEl.classList.add("d-inline");
@@ -93,21 +91,12 @@ const guessNumber = () => {
     return alert("Please enter a valid number.");
   }
 
-  if (status === "over" || lifes === 0) {
-    resultEl.innerHTML = `GAME OVER`;
-    btnGuessEl.classList.add("d-none");
-    inputEl.classList.add("d-none");
-    inputEl.classList.remove("d-inline");
-    return;
-  }
-
   if (guessedNumber === randomNumber) {
     resultEl.innerText = "🎉 Congratulations! You win! 🎉";
     btnGuessEl.classList.add("d-none");
     inputEl.classList.add("d-none");
     inputEl.classList.remove("d-inline");
     inputEl.value = "";
-    status = "over";
   } else if (guessedNumber < randomNumber) {
     resultEl.innerHTML = `Please guess a greater number <i class="fa-solid fa-arrow-up text-danger"></i>`;
     inputEl.value = "";
@@ -119,7 +108,16 @@ const guessNumber = () => {
   }
 
   lifes--;
+
   shotEl.innerHTML = `Remaining life <i class="fa-solid fa-arrow-right text-danger"></i> ${setShotIcons(
     lifes
   )}`;
+
+  if (lifes === 0) {
+    resultEl.innerHTML = `GAME OVER`;
+    btnGuessEl.classList.add("d-none");
+    inputEl.classList.add("d-none");
+    inputEl.classList.remove("d-inline");
+    return;
+  }
 };
